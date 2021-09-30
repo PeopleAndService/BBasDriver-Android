@@ -8,4 +8,30 @@
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:textColor">@color/colorText</item>
     </style>
+
+    <!-- Text Appearance -->
+    <style name="text.h1" parent="android:TextAppearance">
+        <item name="fontFamily">@font/nanumsquare_aceb</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="text.h2" parent="android:TextAppearance">
+        <item name="fontFamily">@font/nanumsquare_aceb</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="text.h3" parent="android:TextAppearance">
+        <item name="fontFamily">@font/nanumsquare_acb</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text.body" parent="android:TextAppearance">
+        <item name="fontFamily">@font/nanumsquare_acr</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text.description" parent="android:TextAppearance">
+        <item name="fontFamily">@font/nanumsquare_acr</item>
+        <item name="android:textSize">10sp</item>
+    </style>
 </resources>
