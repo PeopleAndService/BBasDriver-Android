@@ -6,4 +6,5 @@
     <color name="colorBackground">#FF121212</color>
     <color name="colorBackgroundElevated">#FF3C3C3C</color>
     <color name="colorText">#FFFFFFFF</color>
+    <color name="colorShadow">#88FFFFFF</color>
 </resources>
