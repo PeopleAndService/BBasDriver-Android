@@ -94,12 +94,10 @@ class BusStopView @JvmOverloads constructor(context: Context, attrs: AttributeSe
             borderPaint.color = color
             invalidate()
         }
-
     }
 
-    fun setLine(left: Boolean, right: Boolean) {
-        isLeftLine = left
-        isRightLine = right
+    fun setRightLine(value: Boolean) {
+        isRightLine = value
         invalidate()
     }
 }
