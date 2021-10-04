@@ -34,7 +34,9 @@
 
     <!-- Description -->
     <string name="des_img_bus_nfc">NFC 태그 안내 이미지입니다.</string>
+    <string name="des_img_bus_stop">정류장을 표시하는 이미지입니다.</string>
 
     <!-- Error -->
     <string name="error_driver_name">로그인 에러</string>
+    <string name="error_bus_name">버스 번호 에러</string>
 </resources>

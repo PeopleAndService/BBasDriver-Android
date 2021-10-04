@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BusStopView">
+        <attr format="color" name="circleSolidColor" />
+        <attr format="color" name="circleBorderColor" />
+        <attr format="dimension" name="circleBorderSize" />
+        <attr format="boolean" name="leftLine" />
+        <attr format="boolean" name="rightLine" />
+    </declare-styleable>
+</resources>
+
