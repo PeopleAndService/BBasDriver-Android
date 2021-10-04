@@ -6,7 +6,9 @@ import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.pns.bbasdriver.databinding.ActivityMainBinding
@@ -19,15 +21,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var driverId: String
 
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (!nfcAdapter.isEnabled) createOnNFCDialog()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         driverId = "test 용 아이디"
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        if (!nfcAdapter.isEnabled) createOnNFCDialog()
         nfcPendingIntent = PendingIntent.getActivity(
             this, 0,
             Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
         )
+
         setContentView(binding.root)
     }
 
@@ -51,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showMsg(mMessage: NdefMessage) {
+    private fun showMsg(mMessage: NdefMessage) {
         val recs = mMessage.records
         var vehicleNo = ""
         var routeNm = ""
@@ -77,10 +85,24 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("bus", bus)
                 startActivity(intent)
                 dialog.dismiss()
+                finish()
             }
             .setNegativeButton(resources.getString(R.string.btn_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
+            .show()
+    }
+
+    private fun createOnNFCDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.nfc_title))
+            .setMessage(resources.getString(R.string.nfc_msg))
+            .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
+                val intent = Intent(Settings.ACTION_NFC_SETTINGS)
+                resultLauncher.launch(intent)
+                dialog.dismiss()
+            }
+            .setCancelable(false)
             .show()
     }
 }
