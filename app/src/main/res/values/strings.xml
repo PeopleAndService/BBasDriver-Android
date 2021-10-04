@@ -6,7 +6,7 @@
     <string name="approve_description">계정 가입 인증은 평균 1일 정도 소요됩니다.</string>
 
     <!-- Activity Titles -->
-    <string name="bus_title">%d 버스</string>
+    <string name="bus_title">%s번 버스</string>
     <string name="driver_name">%s 기사님</string>
     <string name="greeting_attendance">오늘도 좋은 하루 되세요.</string>
 
@@ -15,12 +15,14 @@
     <string name="driving_title">버스 운행</string>
     <string name="riding_tile">승차</string>
     <string name="driving_finish_title">운행 종료</string>
+    <string name="nfc_title">NFC 설정</string>
 
     <!-- Dialog Messages -->
-    <string name="driving_msg">%d번 버스를 운행합니다.</string>
+    <string name="driving_msg">%s번 버스를 운행합니다.</string>
     <string name="wait_msg">다음 정류장에서 교통약자 탑승 대기중입니다.</string>
     <string name="riding_msg">교통약자가 탑승을 완료하였습니다.</string>
-    <string name="driving_finish_msg">%d번 버스 운행을 종료합니다.</string>
+    <string name="driving_finish_msg">%s번 버스 운행을 종료합니다.</string>
+    <string name="nfc_msg">앱 사용을 위해 NFC 모드를 기본 모드로 설정해주세요. \n확인버튼을 누르면 설정으로 이동합니다.</string>
 
     <!-- Hints -->
     <string name="nfc_hint">버스 운행을 위해 NFC 태그에 핸드폰을 태그해주세요.</string>
