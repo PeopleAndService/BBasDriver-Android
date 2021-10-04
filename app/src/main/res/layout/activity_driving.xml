@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="busNumber"
+            type="int" />
+
+        <variable
+            name="noticeTime"
+            type="String" />
+
+        <variable
+            name="noticeBusStop"
+            type="String" />
+
+        <variable
+            name="isRiding"
+            type="Boolean" />
+
+        <variable
+            name="busStop1"
+            type="com.pns.bbasdriver.BusStop" />
+
+        <variable
+            name="busStop2"
+            type="com.pns.bbasdriver.BusStop" />
+
+        <variable
+            name="busStop3"
+            type="com.pns.bbasdriver.BusStop" />
+
+        <variable
+            name="busStop4"
+            type="com.pns.bbasdriver.BusStop" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@color/colorSecondary"
+                android:text="@{@string/bus_title(busNumber) ?? @string/error_bus_name}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextClock
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/text.h2"
+                android:textColor="@color/colorText"
+                android:format12Hour="yyyy.MM.dd."
+                android:format24Hour="yyyy.MM.dd."
+                android:layout_marginEnd="4dp"
+                app:layout_constraintEnd_toStartOf="@id/txt_recent_time"
+                app:layout_constraintBottom_toBottomOf="@id/txt_recent_time" />
+
+            <TextClock
+                android:id="@+id/txt_recent_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@color/colorText"
+                android:format12Hour="hh:mm:ss"
+                android:format24Hour="hh:mm:ss"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_notice_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_round_10"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="3dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:visibility="@{noticeTime == null ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintTop_toBottomOf="@+id/layout_title_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/txt_notice_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/text.h2"
+                android:textColor="@color/colorText"
+                android:text="@{noticeTime}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/text.h2"
+                android:textColor="@color/colorText"
+                android:text="@{@string/wait_notice(noticeBusStop)}"
+                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toEndOf="@+id/txt_notice_time"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/group_bus_stop"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/group_txt_bus_stop"
+            app:layout_constraintTop_toBottomOf="@+id/layout_notice_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp">
+
+                <com.pns.bbasdriver.BusStopView
+                    android:id="@+id/iv_bus_stop1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:leftLine="false"
+                    app:rightLine="@{busStop2 != null ? true : false}"
+                    app:circleBorderSize="5dp"
+                    app:circleBorderColor="@{busStop1.wait ? @color/colorWarning : @color/colorText}"
+                    app:circleSolidColor="@color/colorBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_bus"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/des_img_bus_stop"
+                    android:src="@drawable/img_bus"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/iv_bus_stop1"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5"
+                    android:tint="@{isRiding ? @color/colorPrimary : busStop1.wait ? @color/colorWarning : @color/colorText}" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.pns.bbasdriver.BusStopView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:visibility="@{busStop2 == null ? View.INVISIBLE : View.VISIBLE}"
+                app:leftLine="true"
+                app:rightLine="@{busStop3 != null ? true : false}"
+                app:circleBorderSize="5dp"
+                app:circleBorderColor="@color/colorText"
+                app:circleSolidColor="@{busStop2.wait ? @color/colorWarning : @color/colorBackground}" />
+
+            <com.pns.bbasdriver.BusStopView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:visibility="@{busStop3 == null ? View.INVISIBLE : View.VISIBLE}"
+                app:leftLine="true"
+                app:rightLine="@{busStop4 != null ? true : false}"
+                app:circleBorderSize="5dp"
+                app:circleBorderColor="@color/colorText"
+                app:circleSolidColor="@{busStop3.wait ? @color/colorWarning : @color/colorBackground}" />
+
+            <com.pns.bbasdriver.BusStopView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:visibility="@{busStop4 == null ? View.INVISIBLE : View.VISIBLE}"
+                app:leftLine="true"
+                app:rightLine="false"
+                app:circleBorderSize="5dp"
+                app:circleBorderColor="@color/colorText"
+                app:circleSolidColor="@{busStop4.wait ? @color/colorWarning : @color/colorBackground}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/group_txt_bus_stop"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@{busStop1.wait ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop1.name}" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@{busStop2.wait ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop2.name}" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@{busStop3.wait ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop3.name}" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/text.h1"
+                android:textColor="@{busStop4.wait ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop4.name}" />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
