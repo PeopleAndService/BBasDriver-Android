@@ -17,10 +17,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nfcPendingIntent: PendingIntent
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var binding: ActivityMainBinding
+    private lateinit var driverId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        driverId = "test 용 아이디"
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         nfcPendingIntent = PendingIntent.getActivity(
             this, 0,
@@ -51,21 +53,29 @@ class MainActivity : AppCompatActivity() {
 
     fun showMsg(mMessage: NdefMessage) {
         val recs = mMessage.records
+        var vehicleNo = ""
+        var routeNm = ""
+
         for (i in recs.indices) {
             val record = recs[i]
             if (Arrays.equals(record.type, NdefRecord.RTD_TEXT)) {
                 val decodes = String(record.payload, Charset.forName("UTF-8")).split("_")
-                if (decodes[1] == "ROUTENM") createDrivingDialog(decodes[2].toInt())
-                else if (decodes[1] == "VEHICLENO") Log.d("차량 번호", decodes[2])
+                if (decodes[1] == "ROUTENM") routeNm = decodes[2]
+                else if (decodes[1] == "VEHICLENO") vehicleNo = decodes[2]
             }
         }
+
+        if ((vehicleNo != "") and (routeNm != "")) createDrivingDialog(Bus(driverId, routeNm, vehicleNo))
     }
 
-    private fun createDrivingDialog(busNumber: Int) {
+    private fun createDrivingDialog(bus: Bus) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.driving_title))
-            .setMessage(resources.getString(R.string.driving_msg, busNumber))
+            .setMessage(resources.getString(R.string.driving_msg, bus.routeNm))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
+                val intent = Intent(this, DrivingActivity::class.java)
+                intent.putExtra("bus", bus)
+                startActivity(intent)
                 dialog.dismiss()
             }
             .setNegativeButton(resources.getString(R.string.btn_cancel)) { dialog, _ ->

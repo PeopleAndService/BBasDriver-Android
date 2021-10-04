@@ -9,12 +9,12 @@ import com.pns.bbasdriver.databinding.ActivityDrivingBinding
 
 class DrivingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDrivingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDrivingBinding.inflate(layoutInflater)
-        binding.ivBus.setOnClickListener {
-            createRindingDialog()
-        }
+        binding.bus = intent.getSerializableExtra("bus") as Bus
+
         binding.groupTxtBusStop.setHeight(
             TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
@@ -54,10 +54,10 @@ class DrivingActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun createEndDialog(busNumber: Int) {
+    private fun createEndDialog(bus: Bus) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.driving_finish_title))
-            .setMessage(resources.getString(R.string.driving_finish_msg, busNumber))
+            .setMessage(resources.getString(R.string.driving_finish_msg, bus.routeNm))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
                 dialog.dismiss()
             }
