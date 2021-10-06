@@ -35,6 +35,12 @@ class DataStoreModule(private val context: Context) {
         }
     }
 
+    suspend fun delete() {
+        context.dataStore.edit {
+            it.clear()
+        }
+    }
+
     val mUserID: Flow<String> =
         context.dataStore.data
             .catch { exception ->

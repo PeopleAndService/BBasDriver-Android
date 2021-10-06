@@ -66,9 +66,11 @@ class LoginActivity : AppCompatActivity() {
                 ) {
                     if (response.body()?.success == true) {
                         CoroutineScope(Dispatchers.Main).launch {
-                            DataStoreApplication.getInstance().getDataStore().setUserID(name)
+                            DataStoreApplication.getInstance().getDataStore().setUserID(response.body()!!.result.userId)
+                            DataStoreApplication.getInstance().getDataStore()
+                                .setUserName(response.body()!!.result.userName)
                         }
-                        startActivity(Intent(baseContext, MainActivity::class.java))
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
                         finish()
                     } else {
                         Log.e(TAG, "Server Login Error")

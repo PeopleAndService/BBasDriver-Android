@@ -15,6 +15,7 @@ import com.pns.bbasdriver.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.nio.charset.Charset
 import java.util.Arrays
@@ -33,11 +34,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         CoroutineScope(Dispatchers.Main).launch {
-            DataStoreApplication.getInstance().getDataStore().mUserID.collect {
-                binding.username = it
-            }
+            binding.username = DataStoreApplication.getInstance().getDataStore().mUserName.first()
+            driverId = DataStoreApplication.getInstance().getDataStore().mUserID.first()
         }
-        driverId = "test 용 아이디"
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         if (!nfcAdapter.isEnabled) createOnNFCDialog()
         nfcPendingIntent = PendingIntent.getActivity(
