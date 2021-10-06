@@ -74,19 +74,24 @@ class MainActivity : AppCompatActivity() {
         val recs = mMessage.records
         var vehicleNo = ""
         var routeNm = ""
+        var cityCode = ""
 
         for (i in recs.indices) {
             val record = recs[i]
             if (Arrays.equals(record.type, NdefRecord.RTD_TEXT)) {
                 val decodes = String(record.payload, Charset.forName("UTF-8")).split("_")
-                if (decodes[1] == "ROUTENM") routeNm = decodes[2]
-                else if (decodes[1] == "VEHICLENO") vehicleNo = decodes[2]
+                when(decodes[1]){
+                    "ROUTENM" -> routeNm = decodes[2]
+                    "VEHICLENO" -> vehicleNo = decodes[2]
+                    "CITYCODE" -> cityCode = decodes[2]
+                }
             }
         }
 
-        if ((vehicleNo != "") and (routeNm != "")) {
+        if ((cityCode != "") and (routeNm != "")) {
             CoroutineScope(Dispatchers.Main).launch {
                 DataStoreApplication.getInstance().getDataStore().setBusRouteId(routeNm)
+                DataStoreApplication.getInstance().getDataStore().setCityCode(cityCode)
             }
             createDrivingDialog(vehicleNo, routeNm)
         }
