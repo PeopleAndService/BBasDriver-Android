@@ -1,5 +1,6 @@
 package com.pns.bbasdriver
 
+import RetrofitClient
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,25 +13,27 @@ import com.pns.bbasdriver.databinding.ActivityLoginBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private val TAG = "Login"
 
     private val startForSignInResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val account = task.getResult(ApiException::class.java)
-                val uid = account.id
+                val uid = account.id?.toString()
                 val name = account.displayName?.toString()
-                CoroutineScope(Dispatchers.Main).launch {
-                    if (name != null) {
-                        DataStoreApplication.getInstance().getDataStore().setUserID(name)
+                if (name != null) {
+                    if (uid != null) {
+                        requestSingUp(uid, name)
                     }
                 }
-                startActivity(Intent(this, MainActivity::class.java))
             } catch (e: ApiException) {
-                Log.e("Google login error", e.toString())
+                Log.e(TAG, e.toString())
                 e.printStackTrace()
             }
         }
@@ -51,5 +54,31 @@ class LoginActivity : AppCompatActivity() {
         val mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
         val googleSignInIntent = mGoogleSignInClient.signInIntent
         startForSignInResult.launch(googleSignInIntent)
+    }
+
+    private fun requestSingUp(id: String, name: String) {
+        val signUpAPI = RetrofitClient.mInstance.sign(UserRequestBody(id, name))
+        Runnable {
+            signUpAPI.enqueue(object : retrofit2.Callback<BaseResponseModel<User>> {
+                override fun onResponse(
+                    call: Call<BaseResponseModel<User>>,
+                    response: Response<BaseResponseModel<User>>
+                ) {
+                    if (response.body()?.success == true) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            DataStoreApplication.getInstance().getDataStore().setUserID(name)
+                        }
+                        startActivity(Intent(baseContext, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Log.e(TAG, "Server Login Error")
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponseModel<User>>, t: Throwable) {
+                    Log.e(TAG, t.toString())
+                }
+            })
+        }.run()
     }
 }
