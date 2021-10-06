@@ -12,6 +12,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.pns.bbasdriver.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.nio.charset.Charset
 import java.util.Arrays
 
@@ -28,7 +33,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        driverId = "test 용 아이디"
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.username = DataStoreApplication.getInstance().getDataStore().mUserName.first()
+            driverId = DataStoreApplication.getInstance().getDataStore().mUserID.first()
+        }
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         if (!nfcAdapter.isEnabled) createOnNFCDialog()
         nfcPendingIntent = PendingIntent.getActivity(
