@@ -16,6 +16,7 @@ class DataStoreModule(private val context: Context) {
     private val userID = stringPreferencesKey("userID")
     private val userName = stringPreferencesKey("userName")
     private val userVerify = booleanPreferencesKey("userVerify")
+    private val busRouteId = stringPreferencesKey("busRouteId")
 
     suspend fun setUserID(id: String) {
         context.dataStore.edit { preferences ->
@@ -26,6 +27,12 @@ class DataStoreModule(private val context: Context) {
     suspend fun setUserName(name: String) {
         context.dataStore.edit { preferences ->
             preferences[userName] = name
+        }
+    }
+
+    suspend fun setBusRouteId(id: String) {
+        context.dataStore.edit { preferences ->
+            preferences[busRouteId] = id
         }
     }
 
@@ -78,5 +85,18 @@ class DataStoreModule(private val context: Context) {
             }
             .map { preferences ->
                 preferences[userVerify] ?: false
+            }
+
+    val mBusRouteId: Flow<String> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[busRouteId] ?: ""
             }
 }

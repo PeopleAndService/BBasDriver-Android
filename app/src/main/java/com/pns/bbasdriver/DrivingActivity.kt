@@ -6,14 +6,22 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.pns.bbasdriver.databinding.ActivityDrivingBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class DrivingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDrivingBinding
+    private lateinit var busRouteId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDrivingBinding.inflate(layoutInflater)
-        binding.bus = intent.getSerializableExtra("bus") as Bus
+        CoroutineScope(Dispatchers.Main).launch {
+            busRouteId = DataStoreApplication.getInstance().getDataStore().mBusRouteId.first()
+            binding.bus = busRouteId
+        }
 
         binding.groupTxtBusStop.setHeight(
             TypedValue.applyDimension(
@@ -54,10 +62,10 @@ class DrivingActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun createEndDialog(bus: Bus) {
+    private fun createEndDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.driving_finish_title))
-            .setMessage(resources.getString(R.string.driving_finish_msg, bus.routeNm))
+            .setMessage(resources.getString(R.string.driving_finish_msg, busRouteId))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
                 dialog.dismiss()
             }

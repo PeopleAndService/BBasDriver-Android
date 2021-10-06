@@ -1,5 +1,6 @@
 package com.pns.bbasdriver
 
+import RetrofitClient
 import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NdefMessage
@@ -14,9 +15,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.pns.bbasdriver.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
 import java.nio.charset.Charset
 import java.util.Arrays
 
@@ -25,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var driverId: String
+
+    private val TAG = "Main"
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (!nfcAdapter.isEnabled) createOnNFCDialog()
@@ -62,7 +66,6 @@ class MainActivity : AppCompatActivity() {
 
         if (intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED) {
             val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES) ?: return
-            Log.d("messages", messages.toString())
             for (i in messages.indices) showMsg(messages[i] as NdefMessage)
         }
     }
@@ -81,24 +84,51 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if ((vehicleNo != "") and (routeNm != "")) createDrivingDialog(Bus(driverId, routeNm, vehicleNo))
+        if ((vehicleNo != "") and (routeNm != "")) {
+            CoroutineScope(Dispatchers.Main).launch {
+                DataStoreApplication.getInstance().getDataStore().setBusRouteId(routeNm)
+            }
+            createDrivingDialog(vehicleNo, routeNm)
+        }
     }
 
-    private fun createDrivingDialog(bus: Bus) {
+    private fun createDrivingDialog(vehicleId: String, busRouteId: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.driving_title))
-            .setMessage(resources.getString(R.string.driving_msg, bus.routeNm))
+            .setMessage(resources.getString(R.string.driving_msg, busRouteId))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
-                val intent = Intent(this, DrivingActivity::class.java)
-                intent.putExtra("bus", bus)
-                startActivity(intent)
+                requestDriving(vehicleId, busRouteId)
                 dialog.dismiss()
-                finish()
             }
             .setNegativeButton(resources.getString(R.string.btn_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun requestDriving(vehicleId: String, busRouteId: String) {
+        val attendanceAPI = RetrofitClient.mInstance.attendance(AttendanceRequestBody(driverId, vehicleId, busRouteId))
+        Runnable {
+            attendanceAPI.enqueue(object : retrofit2.Callback<BaseResponseModel<User>> {
+                override fun onResponse(
+                    call: Call<BaseResponseModel<User>>,
+                    response: Response<BaseResponseModel<User>>
+                ) {
+                    Log.d(TAG, response.toString())
+                    Log.d(TAG, response.body().toString())
+                    if (response.body()?.success == true) {
+                        startActivity(Intent(applicationContext, DrivingActivity::class.java))
+                        finish()
+                    } else {
+                        Log.e(TAG, "Server Request Error")
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponseModel<User>>, t: Throwable) {
+                    Log.e(TAG, t.toString())
+                }
+            })
+        }.run()
     }
 
     private fun createOnNFCDialog() {
