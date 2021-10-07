@@ -16,6 +16,11 @@ class DataStoreModule(private val context: Context) {
     private val userID = stringPreferencesKey("userID")
     private val userName = stringPreferencesKey("userName")
     private val userVerify = booleanPreferencesKey("userVerify")
+    private val busRouteName = stringPreferencesKey("busRouteName")
+    private val cityCode = stringPreferencesKey("cityCode")
+    private val routeId = stringPreferencesKey("routeId")
+    private val vehicleNo = stringPreferencesKey("vehicleNo")
+
 
     suspend fun setUserID(id: String) {
         context.dataStore.edit { preferences ->
@@ -29,9 +34,33 @@ class DataStoreModule(private val context: Context) {
         }
     }
 
+    suspend fun setBusRouteName(id: String) {
+        context.dataStore.edit { preferences ->
+            preferences[busRouteName] = id
+        }
+    }
+
     suspend fun setUserVerify(isVerify: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[userVerify] = isVerify
+        }
+    }
+
+    suspend fun setCityCode(number: String) {
+        context.dataStore.edit { preferences ->
+            preferences[cityCode] = number
+        }
+    }
+
+    suspend fun setVihicleNo(number: String) {
+        context.dataStore.edit { preferences ->
+            preferences[vehicleNo] = number
+        }
+    }
+
+    suspend fun setRouteId(id: String) {
+        context.dataStore.edit { preferences ->
+            preferences[routeId] = id
         }
     }
 
@@ -78,5 +107,57 @@ class DataStoreModule(private val context: Context) {
             }
             .map { preferences ->
                 preferences[userVerify] ?: false
+            }
+
+    val mBusRouteName: Flow<String> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[busRouteName] ?: ""
+            }
+
+    val mCityCode: Flow<String> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[cityCode] ?: ""
+            }
+
+    val mRouteId: Flow<String> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[routeId] ?: ""
+            }
+
+    val mVehicleNo: Flow<String> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[vehicleNo] ?: ""
             }
 }

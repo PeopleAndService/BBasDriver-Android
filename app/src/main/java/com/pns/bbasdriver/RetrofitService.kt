@@ -13,6 +13,6 @@ interface RetrofitService {
 
     @PUT("driver")
     fun attendance(
-        @Body userRequestBody: UserRequestBody
-    ) : Call<BaseResponseModel<User>>
+        @Body attendanceRequestBody: AttendanceRequestBody
+    ): Call<BaseResponseModel<User>>
 }

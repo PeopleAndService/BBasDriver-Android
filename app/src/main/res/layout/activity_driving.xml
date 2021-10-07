@@ -12,7 +12,7 @@
 
         <variable
             name="bus"
-            type="com.pns.bbasdriver.Bus" />
+            type="String" />
 
         <variable
             name="noticeTime"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/text.h1"
                 android:textColor="@color/colorSecondary"
-                android:text="@{@string/bus_title(bus.routeNm) ?? @string/error_bus_name}"
+                android:text="@{@string/bus_title(bus) ?? @string/error_bus_name}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
