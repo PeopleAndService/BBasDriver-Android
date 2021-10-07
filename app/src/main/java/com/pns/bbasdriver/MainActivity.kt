@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var driverId: String
+    private lateinit var cityCode: String
+    private lateinit var routeId: String
 
     private val TAG = "Main"
 
@@ -74,41 +76,29 @@ class MainActivity : AppCompatActivity() {
         val recs = mMessage.records
         var vehicleNo = ""
         var routeNm = ""
-        var cityCode = ""
 
         for (i in recs.indices) {
             val record = recs[i]
             if (Arrays.equals(record.type, NdefRecord.RTD_TEXT)) {
                 val decodes = String(record.payload, Charset.forName("UTF-8")).split("_")
-                when(decodes[1]){
+                when (decodes[1]) {
                     "ROUTENM" -> routeNm = decodes[2]
                     "VEHICLENO" -> vehicleNo = decodes[2]
                     "CITYCODE" -> cityCode = decodes[2]
+                    "ROUTEID" -> routeId = decodes[2]
                 }
             }
         }
 
-        if ((cityCode != "") and (routeNm != "")) {
+        if ((cityCode != "") and (routeNm != "") and (routeId != "") and (vehicleNo != "")) {
             CoroutineScope(Dispatchers.Main).launch {
-                DataStoreApplication.getInstance().getDataStore().setBusRouteId(routeNm)
+                DataStoreApplication.getInstance().getDataStore().setBusRouteName(routeNm)
+                DataStoreApplication.getInstance().getDataStore().setVihicleNo(vehicleNo)
                 DataStoreApplication.getInstance().getDataStore().setCityCode(cityCode)
+                DataStoreApplication.getInstance().getDataStore().setRouteId(routeId)
             }
             createDrivingDialog(vehicleNo, routeNm)
         }
-    }
-
-    private fun createDrivingDialog(vehicleId: String, busRouteId: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(resources.getString(R.string.driving_title))
-            .setMessage(resources.getString(R.string.driving_msg, busRouteId))
-            .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
-                requestDriving(vehicleId, busRouteId)
-                dialog.dismiss()
-            }
-            .setNegativeButton(resources.getString(R.string.btn_cancel)) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 
     private fun requestDriving(vehicleId: String, busRouteId: String) {
@@ -134,6 +124,20 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }.run()
+    }
+
+    private fun createDrivingDialog(vehicleId: String, busRouteId: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.driving_title))
+            .setMessage(resources.getString(R.string.driving_msg, busRouteId))
+            .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
+                requestDriving(vehicleId, busRouteId)
+                dialog.dismiss()
+            }
+            .setNegativeButton(resources.getString(R.string.btn_cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun createOnNFCDialog() {
