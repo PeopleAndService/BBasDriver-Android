@@ -9,10 +9,15 @@ interface RetrofitService {
     @POST("driverSign")
     fun sign(
         @Body userRequestBody: UserRequestBody
-    ): Call<BaseResponseModel<User>>
+    ): Call<UserBaseResponseModel<User>>
 
     @PUT("driver")
     fun attendance(
         @Body attendanceRequestBody: AttendanceRequestBody
-    ): Call<BaseResponseModel<User>>
+    ): Call<UserBaseResponseModel<User>>
+
+    @POST("queueInfo")
+    fun getInfo(
+        @Body busRequestBody: BusRequestBody
+    ): Call<BusBaseResponseModel>
 }
