@@ -152,7 +152,7 @@
                     app:leftLine="false"
                     app:rightLine="@{busStop2 != null ? true : false}"
                     app:circleBorderSize="5dp"
-                    app:circleBorderColor="@{busStop1.wait ? @color/colorWarning : @color/colorText}"
+                    app:circleBorderColor="@{busStop1.waiting ? @color/colorWarning : @color/colorText}"
                     app:circleSolidColor="@color/colorBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -171,7 +171,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/iv_bus_stop1"
                     android:scaleX="0.5"
                     android:scaleY="0.5"
-                    android:tint="@{isRiding ? @color/colorPrimary : busStop1.wait ? @color/colorWarning : @color/colorText}" />
+                    android:tint="@{isRiding ? @color/colorPrimary : busStop1.waiting ? @color/colorWarning : @color/colorText}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -185,7 +185,7 @@
                 app:rightLine="@{busStop3 != null ? true : false}"
                 app:circleBorderSize="5dp"
                 app:circleBorderColor="@color/colorText"
-                app:circleSolidColor="@{busStop2.wait ? @color/colorWarning : @color/colorBackground}" />
+                app:circleSolidColor="@{busStop2.waiting ? @color/colorWarning : @color/colorBackground}" />
 
             <com.pns.bbasdriver.BusStopView
                 android:layout_width="0dp"
@@ -197,7 +197,7 @@
                 app:rightLine="@{busStop4 != null ? true : false}"
                 app:circleBorderSize="5dp"
                 app:circleBorderColor="@color/colorText"
-                app:circleSolidColor="@{busStop3.wait ? @color/colorWarning : @color/colorBackground}" />
+                app:circleSolidColor="@{busStop3.waiting ? @color/colorWarning : @color/colorBackground}" />
 
             <com.pns.bbasdriver.BusStopView
                 android:layout_width="0dp"
@@ -209,7 +209,7 @@
                 app:rightLine="false"
                 app:circleBorderSize="5dp"
                 app:circleBorderColor="@color/colorText"
-                app:circleSolidColor="@{busStop4.wait ? @color/colorWarning : @color/colorBackground}" />
+                app:circleSolidColor="@{busStop4.waiting ? @color/colorWarning : @color/colorBackground}" />
         </LinearLayout>
 
         <LinearLayout
@@ -227,8 +227,8 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/text.h1"
-                android:textColor="@{busStop1.wait ? @color/colorWarning : @color/colorText}"
-                android:text="@{busStop1.name}" />
+                android:textColor="@{busStop1.waiting ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop1.stationName}" />
 
             <TextView
                 android:layout_width="0dp"
@@ -237,8 +237,8 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/text.h1"
-                android:textColor="@{busStop2.wait ? @color/colorWarning : @color/colorText}"
-                android:text="@{busStop2.name}" />
+                android:textColor="@{busStop2.waiting ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop2.stationName}" />
 
             <TextView
                 android:layout_width="0dp"
@@ -247,8 +247,8 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/text.h1"
-                android:textColor="@{busStop3.wait ? @color/colorWarning : @color/colorText}"
-                android:text="@{busStop3.name}" />
+                android:textColor="@{busStop3.waiting ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop3.stationName}" />
 
             <TextView
                 android:layout_width="0dp"
@@ -257,8 +257,8 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/text.h1"
-                android:textColor="@{busStop4.wait ? @color/colorWarning : @color/colorText}"
-                android:text="@{busStop4.name}" />
+                android:textColor="@{busStop4.waiting ? @color/colorWarning : @color/colorText}"
+                android:text="@{busStop4.stationName}" />
 
         </LinearLayout>
 
