@@ -59,13 +59,14 @@ class LoginActivity : AppCompatActivity() {
     private fun requestSingUp(id: String, name: String) {
         val signUpAPI = RetrofitClient.mInstance.sign(UserRequestBody(id, name))
         Runnable {
-            signUpAPI.enqueue(object : retrofit2.Callback<BaseResponseModel<User>> {
+            signUpAPI.enqueue(object : retrofit2.Callback<UserBaseResponseModel<User>> {
                 override fun onResponse(
-                    call: Call<BaseResponseModel<User>>,
-                    response: Response<BaseResponseModel<User>>
+                    call: Call<UserBaseResponseModel<User>>,
+                    response: Response<UserBaseResponseModel<User>>
                 ) {
                     if (response.body()?.success == true) {
-                        CoroutineScope(Dispatchers.Main).launch {
+                        Log.d(TAG, response.body().toString())
+                        CoroutineScope(Dispatchers.IO).launch {
                             DataStoreApplication.getInstance().getDataStore().setUserID(response.body()!!.result.userId)
                             DataStoreApplication.getInstance().getDataStore()
                                 .setUserName(response.body()!!.result.userName)
@@ -77,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponseModel<User>>, t: Throwable) {
+                override fun onFailure(call: Call<UserBaseResponseModel<User>>, t: Throwable) {
                     Log.e(TAG, t.toString())
                 }
             })

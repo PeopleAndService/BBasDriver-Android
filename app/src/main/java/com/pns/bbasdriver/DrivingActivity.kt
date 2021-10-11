@@ -1,5 +1,6 @@
 package com.pns.bbasdriver
 
+import RetrofitClient
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
-import java.net.URLDecoder
 
 class DrivingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDrivingBinding
@@ -24,8 +24,6 @@ class DrivingActivity : AppCompatActivity() {
     private lateinit var cityCode: String
     private lateinit var busRouteId: String
     private lateinit var vehicleNo: String
-    private lateinit var busRoutes: List<BusRoute>
-    private var index: Int = 0
     private val TAG = "Driving"
     private var isDriving = true
 
@@ -33,20 +31,20 @@ class DrivingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDrivingBinding.inflate(layoutInflater)
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             busRouteName = DataStoreApplication.getInstance().getDataStore().mBusRouteName.first()
             cityCode = DataStoreApplication.getInstance().getDataStore().mCityCode.first()
             busRouteId = DataStoreApplication.getInstance().getDataStore().mRouteId.first()
             vehicleNo = DataStoreApplication.getInstance().getDataStore().mVehicleNo.first()
             binding.bus = busRouteName
-            requestBusAPI()
         }
 
         CoroutineScope(Dispatchers.Main).launch {
-            while(isDriving){
+            while (isDriving) {
                 requestBusLocation()
                 delay(15000)
             }
+            if (!isDriving) createEndDialog()
         }
 
         binding.groupTxtBusStop.setHeight(
@@ -69,94 +67,68 @@ class DrivingActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestBusAPI() {
-        val busRouteAPI = BusRetrofitClient.mInstance.getRoute(
-            URLDecoder.decode(resources.getString(R.string.bus_key), "UTF-8"),
-            cityCode,
-            busRouteId,
-            100,
-            "json"
-        )
-
-         Runnable {
-            busRouteAPI.enqueue(object : retrofit2.Callback<BusBaseResponseModel<List<BusRoute>>> {
-                override fun onResponse(
-                    call: Call<BusBaseResponseModel<List<BusRoute>>>,
-                    response: Response<BusBaseResponseModel<List<BusRoute>>>
-                ) {
-                    Log.d(TAG, response.toString())
-                    Log.d(TAG, response.body()?.response?.body?.items?.result.toString())
-                    busRoutes = response.body()?.response?.body?.items?.result!!
-                    settingBusStop()
-                }
-
-                override fun onFailure(call: Call<BusBaseResponseModel<List<BusRoute>>>, t: Throwable) {
-                    Log.e(TAG, t.toString())
-                }
-            })
-        }.run()
-    }
-
     private fun requestBusLocation() {
-        val busLocationAPI = BusRetrofitClient.mInstance.getLocation(
-            URLDecoder.decode(resources.getString(R.string.bus_key), "UTF-8"),
-            cityCode,
-            busRouteId,
-            100,
-            "json"
-        )
-
+        val busAPI = RetrofitClient.mInstance.getInfo(BusRequestBody(cityCode, busRouteId, vehicleNo))
         Runnable {
-            busLocationAPI.enqueue(object : retrofit2.Callback<BusBaseResponseModel<List<BusLocation>>> {
+            busAPI.enqueue(object : retrofit2.Callback<BusBaseResponseModel> {
                 override fun onResponse(
-                    call: Call<BusBaseResponseModel<List<BusLocation>>>,
-                    response: Response<BusBaseResponseModel<List<BusLocation>>>
+                    call: Call<BusBaseResponseModel>,
+                    response: Response<BusBaseResponseModel>
                 ) {
                     Log.d(TAG, response.toString())
-                    Log.d(TAG, response.body()?.response?.body?.items?.result.toString())
-                    val locations = response.body()?.response?.body?.items?.result!!
-                    if (locations.any { it.vehicleno.contains(vehicleNo) }){
-                        index = locations.filter { it.vehicleno.contains(vehicleNo) }[0].nodeord - 1
-                        settingBusStop()
+                    Log.d(TAG, response.body().toString())
+                    Log.d(TAG, response.body()?.result.toString())
+                    if (response.code() != 404) {
+                        settingBusStop(response.body()?.result!!)
+                        if (response.body()?.message?.recentResult?.stationName != "") settingNotice(response.body()?.message?.recentResult!!)
                     }
                 }
-                override fun onFailure(call: Call<BusBaseResponseModel<List<BusLocation>>>, t: Throwable) {
+
+                override fun onFailure(call: Call<BusBaseResponseModel>, t: Throwable) {
                     Log.e(TAG, t.toString())
                 }
             })
         }.run()
     }
 
-    private fun settingBusStop(){
-        when (index) {
-            busRoutes.size - 1 -> {
-                isDriving = false
-                binding.busStop1 = BusStop(busRoutes[index].nodeid, busRoutes[index].nodeName, false)
+    private fun settingBusStop(busStops: List<BusStop>) {
+        when (busStops.size) {
+            1 -> {
+                binding.busStop1 = busStops[0]
                 binding.busStop2 = null
                 binding.busStop3 = null
                 binding.busStop4 = null
-                createEndDialog()
+                isDriving = false
             }
-            busRoutes.size - 2 -> {
-                binding.busStop1 = BusStop(busRoutes[index].nodeid, busRoutes[index].nodeName, false)
-                binding.busStop2 = BusStop(busRoutes[index + 1].nodeid, busRoutes[index + 1].nodeName, false)
+            2 -> {
+                binding.busStop1 = busStops[0]
+                binding.busStop2 = busStops[1]
                 binding.busStop3 = null
                 binding.busStop4 = null
             }
-            busRoutes.size - 3 -> {
-                binding.busStop1 = BusStop(busRoutes[index].nodeid, busRoutes[index].nodeName, false)
-                binding.busStop2 = BusStop(busRoutes[index + 1].nodeid, busRoutes[index + 1].nodeName, false)
-                binding.busStop3 = BusStop(busRoutes[index + 2].nodeid, busRoutes[index + 2].nodeName, false)
+            3 -> {
+                binding.busStop1 = busStops[0]
+                binding.busStop2 = busStops[1]
+                binding.busStop3 = busStops[2]
                 binding.busStop4 = null
             }
-            else -> {
-                binding.busStop1 = BusStop(busRoutes[index].nodeid, busRoutes[index].nodeName, false)
-                binding.busStop2 = BusStop(busRoutes[index + 1].nodeid, busRoutes[index + 1].nodeName, false)
-                binding.busStop3 = BusStop(busRoutes[index + 2].nodeid, busRoutes[index + 2].nodeName, false)
-                binding.busStop4 = BusStop(busRoutes[index + 3].nodeid, busRoutes[index + 3].nodeName, false)
+            4 -> {
+                binding.busStop1 = busStops[0]
+                binding.busStop2 = busStops[1]
+                binding.busStop3 = busStops[2]
+                binding.busStop4 = busStops[3]
             }
         }
+        if (busStops.size > 1) {
+            if (busStops[1].waiting) {
+                createWaitDialog()
+            }
+        }
+    }
 
+    private fun settingNotice(notice: Notice) {
+        binding.noticeBusStop = notice.stationName
+        binding.noticeTime = notice.queueTime
     }
 
     private fun createWaitDialog() {

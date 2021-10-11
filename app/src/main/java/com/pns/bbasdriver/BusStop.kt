@@ -1,3 +1,11 @@
 package com.pns.bbasdriver
 
-data class BusStop(val id: String, val name: String, val isWait: Boolean)
+import com.google.gson.annotations.SerializedName
+
+data class BusStop(
+    @SerializedName("stationName")
+    val stationName: String,
+
+    @SerializedName("waiting")
+    val waiting: Boolean
+)

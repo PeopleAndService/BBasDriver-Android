@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if ((cityCode != "") and (routeNm != "") and (routeId != "") and (vehicleNo != "")) {
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 DataStoreApplication.getInstance().getDataStore().setBusRouteName(routeNm)
                 DataStoreApplication.getInstance().getDataStore().setVihicleNo(vehicleNo)
                 DataStoreApplication.getInstance().getDataStore().setCityCode(cityCode)
@@ -104,10 +104,10 @@ class MainActivity : AppCompatActivity() {
     private fun requestDriving(vehicleId: String, busRouteId: String) {
         val attendanceAPI = RetrofitClient.mInstance.attendance(AttendanceRequestBody(driverId, vehicleId, busRouteId))
         Runnable {
-            attendanceAPI.enqueue(object : retrofit2.Callback<BaseResponseModel<User>> {
+            attendanceAPI.enqueue(object : retrofit2.Callback<UserBaseResponseModel<User>> {
                 override fun onResponse(
-                    call: Call<BaseResponseModel<User>>,
-                    response: Response<BaseResponseModel<User>>
+                    call: Call<UserBaseResponseModel<User>>,
+                    response: Response<UserBaseResponseModel<User>>
                 ) {
                     Log.d(TAG, response.toString())
                     Log.d(TAG, response.body().toString())
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponseModel<User>>, t: Throwable) {
+                override fun onFailure(call: Call<UserBaseResponseModel<User>>, t: Throwable) {
                     Log.e(TAG, t.toString())
                 }
             })

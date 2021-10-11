@@ -2,7 +2,7 @@ package com.pns.bbasdriver
 
 import com.google.gson.annotations.SerializedName
 
-data class BaseResponseModel<T>(
+data class UserBaseResponseModel<T>(
     @SerializedName("success")
     val success: Boolean,
 
