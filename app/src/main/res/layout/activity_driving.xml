@@ -152,7 +152,7 @@
                     app:leftLine="false"
                     app:rightLine="@{busStop2 != null ? true : false}"
                     app:circleBorderSize="5dp"
-                    app:circleBorderColor="@{busStop1.waiting ? @color/colorWarning : @color/colorText}"
+                    app:circleBorderColor="@{isRiding ? @color/colorPrimary : busStop1.waiting ? @color/colorWarning : @color/colorText}"
                     app:circleSolidColor="@color/colorBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -227,7 +227,7 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/text.h1"
-                android:textColor="@{busStop1.waiting ? @color/colorWarning : @color/colorText}"
+                android:textColor="@{isRiding ? @color/colorPrimary :busStop1.waiting ? @color/colorWarning : @color/colorText}"
                 android:text="@{busStop1.stationName}" />
 
             <TextView

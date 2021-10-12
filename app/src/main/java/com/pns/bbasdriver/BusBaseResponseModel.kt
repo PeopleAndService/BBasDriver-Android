@@ -9,6 +9,9 @@ data class BusBaseResponseModel(
     @SerializedName("result")
     val result: List<BusStop>,
 
+    @SerializedName("boardingStatus")
+    val boardingStatus: Boolean,
+
     @SerializedName("message")
     val message: RecentResult
 )

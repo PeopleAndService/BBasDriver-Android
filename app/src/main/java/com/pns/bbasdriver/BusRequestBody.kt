@@ -7,8 +7,8 @@ data class BusRequestBody(
     @SerializedName("cityCode")
     val cityCode: String,
 
-    @SerializedName("routeId")
-    val routeId: String,
+    @SerializedName("busRouteId")
+    val busRouteId: String,
 
     @SerializedName("vehicleId")
     val vehicleId: String
