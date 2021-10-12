@@ -29,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
                 val name = account.displayName?.toString()
                 if (name != null) {
                     if (uid != null) {
+                        Log.d(TAG, "uid: $uid, name: $name")
                         requestSingUp(uid, name)
                     }
                 }
