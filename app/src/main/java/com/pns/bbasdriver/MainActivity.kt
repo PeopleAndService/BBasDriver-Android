@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 DataStoreApplication.getInstance().getDataStore().setCityCode(cityCode)
                 DataStoreApplication.getInstance().getDataStore().setRouteId(routeId)
             }
-            createDrivingDialog(vehicleNo, routeNm)
+            createDrivingDialog(vehicleNo, routeId, routeNm)
         }
     }
 
@@ -130,10 +130,10 @@ class MainActivity : AppCompatActivity() {
         }.run()
     }
 
-    private fun createDrivingDialog(vehicleId: String, busRouteId: String) {
+    private fun createDrivingDialog(vehicleId: String, busRouteId: String, busRouteName: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.driving_title))
-            .setMessage(resources.getString(R.string.driving_msg, busRouteId))
+            .setMessage(resources.getString(R.string.driving_msg,busRouteName ))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
                 requestDriving(vehicleId, busRouteId)
                 dialog.dismiss()

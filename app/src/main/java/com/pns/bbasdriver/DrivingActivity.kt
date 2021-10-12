@@ -24,6 +24,11 @@ class DrivingActivity : AppCompatActivity() {
     private lateinit var cityCode: String
     private lateinit var busRouteId: String
     private lateinit var vehicleNo: String
+    private lateinit var userId: String
+    private var lastBusStop1: String = ""
+    private var lastBusStop2: String = ""
+    private var isWaitDialog = false
+    private var isRidingDialog = false
     private val TAG = "Driving"
     private var isDriving = true
 
@@ -36,6 +41,7 @@ class DrivingActivity : AppCompatActivity() {
             cityCode = DataStoreApplication.getInstance().getDataStore().mCityCode.first()
             busRouteId = DataStoreApplication.getInstance().getDataStore().mRouteId.first()
             vehicleNo = DataStoreApplication.getInstance().getDataStore().mVehicleNo.first()
+            userId = DataStoreApplication.getInstance().getDataStore().mUserID.first()
             binding.bus = busRouteName
         }
 
@@ -50,7 +56,7 @@ class DrivingActivity : AppCompatActivity() {
         binding.groupTxtBusStop.setHeight(
             TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
-                24 * 4f,
+                24 * 4.5f,
                 this.resources.displayMetrics
             ).toInt()
         )
@@ -78,10 +84,25 @@ class DrivingActivity : AppCompatActivity() {
                     Log.d(TAG, response.toString())
                     Log.d(TAG, response.body().toString())
                     Log.d(TAG, response.body()?.result.toString())
-                    if (response.code() != 404) {
-                        settingBusStop(response.body()?.result!!)
-                        if (response.body()?.message?.recentResult?.stationName != "") settingNotice(response.body()?.message?.recentResult!!)
+                    if (response.isSuccessful){
+                        if ((response.code() != 404) and (response.body()?.result?.size != 0)) {
+                            settingBusStop(response.body()?.result!!)
+                            if (response.body()?.message?.recentResult != null) settingNotice(response.body()?.message?.recentResult!!)
+                            if (!isRidingDialog and (response.body()?.boardingStatus == true)) {
+                                createRindingDialog()
+                                lastBusStop1 = response.body()?.result!![0].stationName
+                                isRidingDialog = true
+                                binding.isRiding = true
+                            }
+                            if (isRidingDialog and (response.body()?.result!![0].stationName != lastBusStop1)) {
+                                binding.isRiding = false
+                                isRidingDialog = false
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "request error")
                     }
+
                 }
 
                 override fun onFailure(call: Call<BusBaseResponseModel>, t: Throwable) {
@@ -120,15 +141,41 @@ class DrivingActivity : AppCompatActivity() {
             }
         }
         if (busStops.size > 1) {
-            if (busStops[1].waiting) {
+            if (!isWaitDialog and busStops[1].waiting) {
                 createWaitDialog()
+                lastBusStop2 = busStops[1].stationName
+                isWaitDialog = true
+            }
+            if (isWaitDialog and (busStops[1].stationName != lastBusStop2)) {
+                isWaitDialog = false
             }
         }
     }
 
     private fun settingNotice(notice: Notice) {
         binding.noticeBusStop = notice.stationName
-        binding.noticeTime = notice.queueTime
+        binding.noticeTime = notice.queueTime.substring(11, 19)
+    }
+
+    private fun requestDriving() {
+        val attendanceAPI = RetrofitClient.mInstance.attendance(AttendanceRequestBody(userId, "null", "null"))
+        Runnable {
+            attendanceAPI.enqueue(object : retrofit2.Callback<UserBaseResponseModel<User>> {
+                override fun onResponse(
+                    call: Call<UserBaseResponseModel<User>>,
+                    response: Response<UserBaseResponseModel<User>>
+                ) {
+                    Log.d(TAG, response.toString())
+                    Log.d(TAG, response.body().toString())
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    finish()
+                }
+
+                override fun onFailure(call: Call<UserBaseResponseModel<User>>, t: Throwable) {
+                    Log.e(TAG, t.toString())
+                }
+            })
+        }.run()
     }
 
     private fun createWaitDialog() {
@@ -142,7 +189,6 @@ class DrivingActivity : AppCompatActivity() {
     }
 
     private fun createRindingDialog() {
-        binding.isRiding = true
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.riding_tile))
             .setMessage(resources.getString(R.string.riding_msg))
@@ -157,7 +203,7 @@ class DrivingActivity : AppCompatActivity() {
             .setTitle(resources.getString(R.string.driving_finish_title))
             .setMessage(resources.getString(R.string.driving_finish_msg, busRouteName))
             .setPositiveButton(resources.getString(R.string.btn_confirm)) { dialog, _ ->
-                startActivity(Intent(applicationContext, MainActivity::class.java))
+                requestDriving()
                 dialog.dismiss()
             }
             .show()
