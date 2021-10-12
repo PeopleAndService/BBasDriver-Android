@@ -50,6 +50,10 @@ class MainActivity : AppCompatActivity() {
             Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
         )
 
+        binding.ibtnMyPage.setOnClickListener {
+            startActivity(Intent(this, MyPageActivity::class.java))
+        }
+
         setContentView(binding.root)
     }
 
