@@ -102,6 +102,7 @@
     </style>
 
     <style name="dialog.buttonbar" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:paddingTop">12dp</item>
         <item name="android:paddingEnd">12dp</item>
         <item name="android:paddingBottom">12dp</item>
     </style>
