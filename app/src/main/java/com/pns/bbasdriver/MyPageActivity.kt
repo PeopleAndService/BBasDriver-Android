@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.pns.bbasdriver.databinding.ActivityMyPageBinding
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,8 @@ class MyPageActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             userId = DataStoreApplication.getInstance().getDataStore().mUserID.first()
         }
+        binding.btnOpenSource.setOnClickListener { startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java)) }
+        binding.btnApiSource.setOnClickListener { createApiSource() }
         binding.btnLogout.setOnClickListener { createLogoutDialog() }
         binding.btnWithdraw.setOnClickListener { createWithdrawDialog() }
         binding.btnBack.setOnClickListener { finish() }
@@ -66,10 +69,20 @@ class MyPageActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.error_title))
             .setMessage(getString(R.string.error_message))
-            .setPositiveButton(getString(R.string.btn_confirm)) { dialogInterface, _ ->
-                dialogInterface.dismiss()
+            .setPositiveButton(getString(R.string.btn_confirm)) { dialog, _ ->
+                dialog.dismiss()
             }
             .setCancelable(false)
+            .show()
+    }
+
+    private fun createApiSource() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.my_api_source))
+            .setMessage(getString(R.string.api_source_msg))
+            .setPositiveButton(getString(R.string.btn_close)){ dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 

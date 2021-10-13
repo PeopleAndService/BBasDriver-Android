@@ -26,6 +26,7 @@
     <string name="riding_msg">교통약자가 탑승을 완료하였습니다.</string>
     <string name="driving_finish_msg">%s번 버스 운행을 종료합니다.</string>
     <string name="nfc_msg">앱 사용을 위해 NFC 모드를 기본 모드로 설정해주세요. \n확인버튼을 누르면 설정으로 이동합니다.</string>
+    <string name="api_source_msg">공공데이터 포털 국토교통부 국가교통정보</string>
 
     <!-- Hints -->
     <string name="nfc_hint">버스 운행을 위해 NFC 태그에 핸드폰을 태그해주세요.</string>
@@ -33,6 +34,7 @@
     <!-- Buttons -->
     <string name="btn_confirm">확인</string>
     <string name="btn_cancel">취소</string>
+    <string name="btn_close">닫기</string>
 
     <!-- My page titles -->
     <string name="my_legal_notice">법적고지</string>
