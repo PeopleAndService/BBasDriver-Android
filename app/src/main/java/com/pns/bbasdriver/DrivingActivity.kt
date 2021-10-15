@@ -87,7 +87,7 @@ class DrivingActivity : AppCompatActivity() {
                     if (response.isSuccessful){
                         if ((response.code() != 404) and (response.body()?.result?.size != 0)) {
                             settingBusStop(response.body()?.result!!)
-                            if (response.body()?.message?.recentResult != null) settingNotice(response.body()?.message?.recentResult!!)
+                            if (response.body()?.message?.recentResult?.stationName != null) settingNotice(response.body()?.message?.recentResult!!)
                             if (!isRidingDialog and (response.body()?.boardingStatus == true)) {
                                 createRindingDialog()
                                 lastBusStop1 = response.body()?.result!![0].stationName
